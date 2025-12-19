@@ -27,18 +27,21 @@
 
             <div class="relative my-8">
                 <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-200"></span></div>
-                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Or use email</span></div>
+                <div class="relative flex justify-center text-sm"><span class="bg-white px-2 text-slate-400 font-medium uppercase tracking-wider text-[10px]">Or use credentials</span></div>
             </div>
 
             <form id="auth-form" class="space-y-4">
-                <input type="email" id="email" placeholder="Email address" required 
-                    class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                <div>
+                    <input type="text" id="identifier" placeholder="Email or Mobile Number" required 
+                        class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <p id="input-hint" class="text-[10px] text-slate-400 mt-1 ml-1"></p>
+                </div>
                 
-                <input type="password" id="password" placeholder="Create Password" required 
-                    class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="password" id="password" placeholder="Password" required 
+                    class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
                 
                 <button type="submit" id="submit-btn" 
-                    class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
                     Create Account
                 </button>
             </form>
@@ -49,16 +52,16 @@
             </p>
         </div>
 
-        <div id="success-container" class="hidden text-center py-6">
+        <div id="success-container" class="hidden text-center py-6 animate-in fade-in zoom-in duration-300">
             <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
             <h2 id="success-title" class="text-2xl font-bold text-slate-800">Success!</h2>
-            <p id="success-msg" class="text-slate-500 mt-2 mb-6">Your account has been created successfully.</p>
+            <p id="success-msg" class="text-slate-500 mt-2 mb-6"></p>
             <button onclick="window.location.reload()" class="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg font-medium hover:bg-slate-200 transition">
-                Back to Home
+                Logout
             </button>
         </div>
 
@@ -90,31 +93,14 @@
             }
         }
 
-        // Function to trigger the Success Message
-        function showSuccess(email) {
+        function showSuccess(idValue) {
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('success-container').classList.remove('hidden');
             
-            if (!isSignUp) {
-                document.getElementById('success-title').innerText = "Welcome Back!";
-                document.getElementById('success-msg').innerText = `Logged in as ${email}`;
+            const type = idValue.includes('@') ? "Email" : "Mobile";
+            
+            if (isSignUp) {
+                document.getElementById('success-title').innerText = "Registration Complete!";
+                document.getElementById('success-msg').innerText = `Your ${type} (${idValue}) has been registered.`;
             } else {
-                document.getElementById('success-msg').innerText = `Account created for ${email}`;
-            }
-        }
-
-        // Handle Email/Password Form
-        document.getElementById('auth-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            showSuccess(email);
-        });
-
-        // Handle Google Login Success
-        function handleCredentialResponse(response) {
-            console.log("Google Token Received");
-            showSuccess("Google User");
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('success-title
