@@ -17,7 +17,7 @@
                 <p id="form-subtitle" class="text-slate-500 mt-2">Start your financial journey today</p>
             </div>
 
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center mb-6">
                 <div id="g_id_onload"
                      data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
                      data-callback="handleCredentialResponse">
@@ -27,21 +27,26 @@
 
             <div class="relative my-8">
                 <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-200"></span></div>
-                <div class="relative flex justify-center text-sm"><span class="bg-white px-2 text-slate-400 font-medium uppercase tracking-wider text-[10px]">Or use credentials</span></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Or use email/mobile</span></div>
             </div>
 
-            <form id="auth-form" class="space-y-4">
-                <div>
-                    <input type="text" id="identifier" placeholder="Email or Mobile Number" required 
-                        class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                    <p id="input-hint" class="text-[10px] text-slate-400 mt-1 ml-1"></p>
+            <form id="auth-form" class="space-y-5">
+                <div class="relative">
+                    <label id="input-label" for="identifier" class="block text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wider transition-all">
+                        Email or Mobile
+                    </label>
+                    <input type="text" id="identifier" placeholder="e.g. name@mail.com or 9876543210" required 
+                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-all text-slate-700">
                 </div>
                 
-                <input type="password" id="password" placeholder="Password" required 
-                    class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                <div class="relative">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Password</label>
+                    <input type="password" id="password" placeholder="••••••••" required 
+                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-all">
+                </div>
                 
                 <button type="submit" id="submit-btn" 
-                    class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
+                    class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
                     Create Account
                 </button>
             </form>
@@ -52,41 +57,58 @@
             </p>
         </div>
 
-        <div id="success-container" class="hidden text-center py-6 animate-in fade-in zoom-in duration-300">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div id="success-container" class="hidden text-center py-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h2 id="success-title" class="text-2xl font-bold text-slate-800">Success!</h2>
-            <p id="success-msg" class="text-slate-500 mt-2 mb-6"></p>
-            <button onclick="window.location.reload()" class="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg font-medium hover:bg-slate-200 transition">
-                Logout
+            <h2 id="success-title" class="text-3xl font-bold text-slate-800">Perfect!</h2>
+            <p id="success-msg" class="text-slate-500 mt-3 mb-8 text-lg"></p>
+            <button onclick="window.location.reload()" class="w-full py-3 border-2 border-slate-100 text-slate-600 rounded-xl font-semibold hover:bg-slate-50 transition">
+                Sign Out
             </button>
         </div>
 
     </div>
 
     <script>
+        const identifierInput = document.getElementById('identifier');
+        const inputLabel = document.getElementById('input-label');
         let isSignUp = true;
+
+        // --- SMART LABEL LOGIC ---
+        identifierInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            
+            if (value === "") {
+                inputLabel.innerText = "Email or Mobile";
+                inputLabel.classList.replace('text-blue-600', 'text-slate-400');
+            } else if (/^\d+$/.test(value)) {
+                // If the input is only numbers
+                inputLabel.innerText = "Mobile Number Detected";
+                inputLabel.classList.replace('text-slate-400', 'text-blue-600');
+            } else {
+                // If the input contains letters/@
+                inputLabel.innerText = "Email Address Detected";
+                inputLabel.classList.replace('text-slate-400', 'text-blue-600');
+            }
+        });
 
         function toggleAuth() {
             isSignUp = !isSignUp;
             const title = document.getElementById('form-title');
-            const subtitle = document.getElementById('form-subtitle');
             const submitBtn = document.getElementById('submit-btn');
             const toggleText = document.getElementById('toggle-text');
             const toggleLink = document.getElementById('toggle-link');
 
             if (isSignUp) {
                 title.innerText = "Create Account";
-                subtitle.innerText = "Start your financial journey today";
                 submitBtn.innerText = "Create Account";
                 toggleText.innerText = "Already have an account?";
                 toggleLink.innerText = "Log In";
             } else {
                 title.innerText = "Sudhakaran Finance";
-                subtitle.innerText = "Log in to view your dashboard";
                 submitBtn.innerText = "Sign In";
                 toggleText.innerText = "New to Sudhakaran Finance?";
                 toggleLink.innerText = "Create Account";
@@ -97,10 +119,20 @@
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('success-container').classList.remove('hidden');
             
-            const type = idValue.includes('@') ? "Email" : "Mobile";
+            const type = /^\d+$/.test(idValue) ? "Mobile" : "Email";
+            const action = isSignUp ? "registered" : "logged in";
             
-            if (isSignUp) {
-                document.getElementById('success-title').innerText = "Registration Complete!";
-                document.getElementById('success-msg').innerText = `Your ${type} (${idValue}) has been registered.`;
-            } else {
-                document.getElementById('success-title
+            document.getElementById('success-msg').innerHTML = `Your <b>${type}</b> (${idValue}) <br> has been successfully ${action}.`;
+        }
+
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showSuccess(identifierInput.value);
+        });
+
+        function handleCredentialResponse(response) {
+            showSuccess("Verified Google User");
+        }
+    </script>
+</body>
+</html>
