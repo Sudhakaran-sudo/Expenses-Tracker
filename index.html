@@ -30,20 +30,28 @@
                 <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Or use email/mobile</span></div>
             </div>
 
-            <form id="auth-form" class="space-y-5">
+            <form id="auth-form" class="space-y-4">
                 <div class="relative">
-                    <label id="input-label" for="identifier" class="block text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wider transition-all">
+                    <label id="input-label" for="identifier" class="block text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wider">
                         Email or Mobile
                     </label>
                     <input type="text" id="identifier" placeholder="e.g. name@mail.com or 9876543210" required 
-                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-all text-slate-700">
+                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none transition-all">
                 </div>
                 
                 <div class="relative">
                     <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Password</label>
                     <input type="password" id="password" placeholder="••••••••" required 
-                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 focus:ring-0 outline-none transition-all">
+                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
                 </div>
+
+                <div id="confirm-password-group" class="relative">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Confirm Password</label>
+                    <input type="password" id="confirm-password" placeholder="••••••••" required 
+                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                </div>
+
+                <p id="error-message" class="text-red-500 text-xs hidden italic text-center">Passwords do not match!</p>
                 
                 <button type="submit" id="submit-btn" 
                     class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
@@ -57,7 +65,7 @@
             </p>
         </div>
 
-        <div id="success-container" class="hidden text-center py-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div id="success-container" class="hidden text-center py-10">
             <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
                 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
@@ -75,41 +83,42 @@
     <script>
         const identifierInput = document.getElementById('identifier');
         const inputLabel = document.getElementById('input-label');
+        const confirmPassGroup = document.getElementById('confirm-password-group');
+        const errorMsg = document.getElementById('error-message');
         let isSignUp = true;
 
-        // --- SMART LABEL LOGIC ---
+        // Dynamic Label Detection
         identifierInput.addEventListener('input', (e) => {
             const value = e.target.value;
-            
             if (value === "") {
                 inputLabel.innerText = "Email or Mobile";
-                inputLabel.classList.replace('text-blue-600', 'text-slate-400');
             } else if (/^\d+$/.test(value)) {
-                // If the input is only numbers
                 inputLabel.innerText = "Mobile Number Detected";
-                inputLabel.classList.replace('text-slate-400', 'text-blue-600');
             } else {
-                // If the input contains letters/@
                 inputLabel.innerText = "Email Address Detected";
-                inputLabel.classList.replace('text-slate-400', 'text-blue-600');
             }
         });
 
+        // Toggle between Login and Signup
         function toggleAuth() {
             isSignUp = !isSignUp;
             const title = document.getElementById('form-title');
             const submitBtn = document.getElementById('submit-btn');
             const toggleText = document.getElementById('toggle-text');
             const toggleLink = document.getElementById('toggle-link');
+            
+            errorMsg.classList.add('hidden'); // Hide errors on toggle
 
             if (isSignUp) {
                 title.innerText = "Create Account";
                 submitBtn.innerText = "Create Account";
+                confirmPassGroup.classList.remove('hidden'); // Show Confirm Field
                 toggleText.innerText = "Already have an account?";
                 toggleLink.innerText = "Log In";
             } else {
                 title.innerText = "Sudhakaran Finance";
                 submitBtn.innerText = "Sign In";
+                confirmPassGroup.classList.add('hidden'); // Hide Confirm Field
                 toggleText.innerText = "New to Sudhakaran Finance?";
                 toggleLink.innerText = "Create Account";
             }
@@ -118,15 +127,24 @@
         function showSuccess(idValue) {
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('success-container').classList.remove('hidden');
-            
             const type = /^\d+$/.test(idValue) ? "Mobile" : "Email";
-            const action = isSignUp ? "registered" : "logged in";
-            
-            document.getElementById('success-msg').innerHTML = `Your <b>${type}</b> (${idValue}) <br> has been successfully ${action}.`;
+            document.getElementById('success-msg').innerHTML = `Your <b>${type}</b> (${idValue}) <br> has been verified.`;
         }
 
+        // --- PASSWORD VALIDATION LOGIC ---
         document.getElementById('auth-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            const pass = document.getElementById('password').value;
+            const confirmPass = document.getElementById('confirm-password').value;
+
+            // Only validate if we are in Sign Up mode
+            if (isSignUp && pass !== confirmPass) {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('confirm-password').classList.add('border-red-400');
+                return;
+            }
+
+            errorMsg.classList.add('hidden');
             showSuccess(identifierInput.value);
         });
 
