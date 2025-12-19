@@ -33,17 +33,14 @@
             <div class="flex flex-col items-center mb-6">
                 <div id="g_id_onload"
                      data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-                     data-context="signin"
-                     data-ux_mode="popup"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
+                     data-callback="handleCredentialResponse">
                 </div>
-                <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-width="320"></div>
+                <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-width="320"></div>
             </div>
 
             <div class="relative my-6">
                 <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-                <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-white px-2 text-slate-400 font-bold">Or use email/mobile</span></div>
+                <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-white px-2 text-slate-400 font-bold">Or use credentials</span></div>
             </div>
 
             <form id="auth-form" class="space-y-4">
@@ -59,8 +56,14 @@
                 </div>
                 
                 <div class="space-y-4">
-                    <input type="password" id="password" placeholder="Password" required 
-                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                    <div>
+                        <input type="password" id="password" placeholder="Password" required 
+                            class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                        <div id="forgot-password-wrapper" class="hidden text-right mt-1">
+                            <button type="button" onclick="showRecovery()" class="text-xs text-blue-600 hover:underline font-medium">Forgot password?</button>
+                        </div>
+                    </div>
+
                     <div id="confirm-password-group">
                         <input type="password" id="confirm-password" placeholder="Confirm Password" 
                             class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
@@ -82,110 +85,10 @@
             </p>
         </div>
 
-        <div id="success-container" class="hidden text-center py-10">
-            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-            </div>
-            <h2 class="text-2xl font-bold text-slate-800">Verified!</h2>
-            <p id="success-msg" class="text-slate-500 mt-2 mb-8"></p>
-            <button onclick="window.location.reload()" class="bg-slate-100 px-6 py-2 rounded-lg text-slate-600 font-semibold hover:bg-slate-200">Sign Out</button>
+        <div id="recovery-container" class="hidden text-center py-4">
+            <h2 class="text-xl font-bold text-slate-800">Reset Password</h2>
+            <p class="text-slate-400 text-sm mt-2 mb-6">Enter your email or mobile to receive a reset link.</p>
+            <input type="text" id="recovery-id" placeholder="Registered Email or Mobile" class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 mb-4 outline-none focus:border-blue-500">
+            <button onclick="handleRecovery()" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold mb-4">Send Reset Link</button>
+            <button onclick="backToAuth()" class="text-sm text-blue-600 hover:underline">Back to Login</button>
         </div>
-    </div>
-
-    <script>
-        // 1. Setup Countries
-        const countries = [
-            { name: "India", code: "+91", flag: "🇮🇳", length: 10 },
-            { name: "USA", code: "+1", flag: "🇺🇸", length: 10 },
-            { name: "UK", code: "+44", flag: "🇬🇧", length: 11 },
-            { name: "UAE", code: "+971", flag: "🇦🇪", length: 9 }
-        ];
-
-        const countrySelect = document.getElementById('country-code');
-        const identifierInput = document.getElementById('identifier');
-        const countryCodeContainer = document.getElementById('country-code-container');
-        const errorBox = document.getElementById('error-box');
-        const errorText = document.getElementById('error-text');
-        const confirmPassGroup = document.getElementById('confirm-password-group');
-        const confirmPassInput = document.getElementById('confirm-password');
-        let isSignUp = true;
-
-        // Populate the country dropdown
-        countries.forEach(c => {
-            const opt = document.createElement('option');
-            opt.value = c.code;
-            opt.textContent = `${c.flag} ${c.code}`;
-            opt.dataset.len = c.length;
-            countrySelect.appendChild(opt);
-        });
-
-        // Toggle Function (Hides/Shows fields)
-        function toggleAuth() {
-            isSignUp = !isSignUp;
-            document.getElementById('form-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
-            document.getElementById('submit-btn').innerText = isSignUp ? "Create Account" : "Sign In";
-            
-            if (isSignUp) {
-                confirmPassGroup.classList.remove('hidden');
-                confirmPassInput.setAttribute('required', 'true');
-            } else {
-                confirmPassGroup.classList.add('hidden');
-                confirmPassInput.removeAttribute('required');
-            }
-            errorBox.classList.add('hidden');
-        }
-
-        // Identifier detection (Email vs Mobile)
-        identifierInput.addEventListener('input', (e) => {
-            if (/^\d/.test(e.target.value)) {
-                countryCodeContainer.classList.add('show');
-            } else {
-                countryCodeContainer.classList.remove('show');
-            }
-        });
-
-        // Validation & Submission
-        document.getElementById('auth-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const val = identifierInput.value;
-            const pass = document.getElementById('password').value;
-            
-            errorBox.classList.add('hidden');
-
-            if (/^\d+$/.test(val)) {
-                const len = parseInt(countrySelect.options[countrySelect.selectedIndex].dataset.len);
-                if (val.length !== len) {
-                    showError(`Mobile number must be ${len} digits.`);
-                    return;
-                }
-            } else if (!val.includes('@')) {
-                showError("Valid email required.");
-                return;
-            }
-
-            if (isSignUp && pass !== confirmPassInput.value) {
-                showError("Passwords do not match.");
-                return;
-            }
-
-            showSuccess(val);
-        });
-
-        function showError(msg) {
-            errorBox.classList.remove('hidden');
-            errorText.innerText = msg;
-        }
-
-        function showSuccess(id) {
-            document.getElementById('auth-container').classList.add('hidden');
-            document.getElementById('success-container').classList.remove('hidden');
-            document.getElementById('success-msg').innerHTML = `Verified as <b>${id}</b>`;
-        }
-
-        // This runs after Google Login
-        function handleCredentialResponse(response) {
-            showSuccess("Google Verified User");
-        }
-    </script>
-</body>
-</html>
