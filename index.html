@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join | Sudhakaran Finance</title>
+    <title>Secure Join | Sudhakaran Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -12,46 +12,43 @@
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
         
         <div id="auth-container">
-            <div class="text-center mb-8">
-                <h1 id="form-title" class="text-2xl font-bold text-slate-800">Create Account</h1>
-                <p id="form-subtitle" class="text-slate-500 mt-2">Start your financial journey today</p>
-            </div>
-
-            <div class="flex flex-col items-center mb-6">
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse">
-                </div>
-                <div class="g_id_signin" data-type="standard" data-shape="pill" data-text="signup_with" data-width="320"></div>
-            </div>
-
-            <div class="relative my-8">
-                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-200"></span></div>
-                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Or use email/mobile</span></div>
+            <div class="text-center mb-6">
+                <h1 id="form-title" class="text-2xl font-bold text-slate-800 tracking-tight">Create Account</h1>
+                <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Join the future of wealth management</p>
             </div>
 
             <form id="auth-form" class="space-y-4">
                 <div class="relative">
-                    <label id="input-label" for="identifier" class="block text-xs font-semibold text-blue-600 mb-1 uppercase tracking-wider">
+                    <label id="input-label" class="block text-[10px] font-bold text-blue-600 mb-1 uppercase tracking-widest">
                         Email or Mobile
                     </label>
-                    <input type="text" id="identifier" placeholder="e.g. name@mail.com or 9876543210" required 
-                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none transition-all">
+                    
+                    <div class="flex gap-2">
+                        <select id="country-code" class="hidden px-2 py-3 bg-slate-50 border-2 border-slate-100 rounded-lg text-sm font-medium outline-none focus:border-blue-500">
+                            <option value="+91">+91 (IN)</option>
+                            <option value="+1">+1 (US)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+971">+971 (UAE)</option>
+                        </select>
+
+                        <input type="text" id="identifier" placeholder="name@mail.com or 10-digit mobile" required 
+                            class="flex-1 px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none transition-all">
+                    </div>
                 </div>
                 
-                <div class="relative">
-                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Password</label>
-                    <input type="password" id="password" placeholder="••••••••" required 
+                <div class="space-y-4">
+                    <input type="password" id="password" placeholder="Password" required 
                         class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                    
+                    <div id="confirm-password-group">
+                        <input type="password" id="confirm-password" placeholder="Confirm Password" required 
+                            class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                    </div>
                 </div>
 
-                <div id="confirm-password-group" class="relative">
-                    <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">Confirm Password</label>
-                    <input type="password" id="confirm-password" placeholder="••••••••" required 
-                        class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                <div id="error-box" class="hidden bg-red-50 border-l-4 border-red-500 p-3">
+                    <p id="error-text" class="text-red-700 text-xs font-medium"></p>
                 </div>
-
-                <p id="error-message" class="text-red-500 text-xs hidden italic text-center">Passwords do not match!</p>
                 
                 <button type="submit" id="submit-btn" 
                     class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
@@ -59,98 +56,22 @@
                 </button>
             </form>
 
-            <p class="text-center text-sm text-slate-600 mt-8">
-                <span id="toggle-text">Already have an account?</span> 
+            <div class="relative my-8">
+                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
+                <div class="relative flex justify-center text-[10px] uppercase tracking-tighter"><span class="bg-white px-2 text-slate-400">Social Login</span></div>
+            </div>
+
+            <div class="flex justify-center">
+                <div id="g_id_onload" data-client_id="YOUR_ID.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
+                <div class="g_id_signin" data-type="icon" data-shape="circle" data-theme="outline"></div>
+            </div>
+
+            <p class="text-center text-sm text-slate-500 mt-8">
+                <span id="toggle-text">Already a member?</span> 
                 <button onclick="toggleAuth()" id="toggle-link" class="text-blue-600 font-bold hover:underline">Log In</button>
             </p>
         </div>
 
         <div id="success-container" class="hidden text-center py-10">
-            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </div>
-            <h2 id="success-title" class="text-3xl font-bold text-slate-800">Perfect!</h2>
-            <p id="success-msg" class="text-slate-500 mt-3 mb-8 text-lg"></p>
-            <button onclick="window.location.reload()" class="w-full py-3 border-2 border-slate-100 text-slate-600 rounded-xl font-semibold hover:bg-slate-50 transition">
-                Sign Out
-            </button>
-        </div>
-
-    </div>
-
-    <script>
-        const identifierInput = document.getElementById('identifier');
-        const inputLabel = document.getElementById('input-label');
-        const confirmPassGroup = document.getElementById('confirm-password-group');
-        const errorMsg = document.getElementById('error-message');
-        let isSignUp = true;
-
-        // Dynamic Label Detection
-        identifierInput.addEventListener('input', (e) => {
-            const value = e.target.value;
-            if (value === "") {
-                inputLabel.innerText = "Email or Mobile";
-            } else if (/^\d+$/.test(value)) {
-                inputLabel.innerText = "Mobile Number Detected";
-            } else {
-                inputLabel.innerText = "Email Address Detected";
-            }
-        });
-
-        // Toggle between Login and Signup
-        function toggleAuth() {
-            isSignUp = !isSignUp;
-            const title = document.getElementById('form-title');
-            const submitBtn = document.getElementById('submit-btn');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleLink = document.getElementById('toggle-link');
-            
-            errorMsg.classList.add('hidden'); // Hide errors on toggle
-
-            if (isSignUp) {
-                title.innerText = "Create Account";
-                submitBtn.innerText = "Create Account";
-                confirmPassGroup.classList.remove('hidden'); // Show Confirm Field
-                toggleText.innerText = "Already have an account?";
-                toggleLink.innerText = "Log In";
-            } else {
-                title.innerText = "Sudhakaran Finance";
-                submitBtn.innerText = "Sign In";
-                confirmPassGroup.classList.add('hidden'); // Hide Confirm Field
-                toggleText.innerText = "New to Sudhakaran Finance?";
-                toggleLink.innerText = "Create Account";
-            }
-        }
-
-        function showSuccess(idValue) {
-            document.getElementById('auth-container').classList.add('hidden');
-            document.getElementById('success-container').classList.remove('hidden');
-            const type = /^\d+$/.test(idValue) ? "Mobile" : "Email";
-            document.getElementById('success-msg').innerHTML = `Your <b>${type}</b> (${idValue}) <br> has been verified.`;
-        }
-
-        // --- PASSWORD VALIDATION LOGIC ---
-        document.getElementById('auth-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pass = document.getElementById('password').value;
-            const confirmPass = document.getElementById('confirm-password').value;
-
-            // Only validate if we are in Sign Up mode
-            if (isSignUp && pass !== confirmPass) {
-                errorMsg.classList.remove('hidden');
-                document.getElementById('confirm-password').classList.add('border-red-400');
-                return;
-            }
-
-            errorMsg.classList.add('hidden');
-            showSuccess(identifierInput.value);
-        });
-
-        function handleCredentialResponse(response) {
-            showSuccess("Verified Google User");
-        }
-    </script>
-</body>
-</html>
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="
