@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | NorthStar Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-blue-600">NorthStar</h1>
+            <p class="text-gray-500">Track your financial future</p>
+        </div>
+
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Email Address</label>
+                <input type="email" id="email" required 
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    placeholder="name@example.com">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password" required 
+                    class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+                    placeholder="••••••••">
+            </div>
+
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center">
+                    <input type="checkbox" class="text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <span class="ml-2 text-gray-600">Remember me</span>
+                </label>
+                <a href="#" class="text-blue-600 hover:underline">Forgot password?</a>
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-blue-600 text-white py-2 rounded-md font-semibold hover:bg-blue-700 transition duration-200">
+                Sign In
+            </button>
+        </form>
+
+        <p class="mt-8 text-center text-sm text-gray-600">
+            Don't have an account? 
+            <a href="#" class="text-blue-600 font-bold hover:underline">Sign Up</a>
+        </p>
+    </div>
+
+    <script>
+        // Basic JavaScript to handle the form
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log("Login Attempt:", { email, password });
+            alert("Login button clicked! Now connect this to your database.");
+        });
+    </script>
+</body>
+</html>
