@@ -17,6 +17,30 @@
                 <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Join the future of wealth management</p>
             </div>
 
+            <div class="flex justify-center mb-6">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="pill"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+            </div>
+
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
+                <div class="relative flex justify-center text-[10px] uppercase tracking-tighter"><span class="bg-white px-2 text-slate-400">Or use email/mobile</span></div>
+            </div>
+
             <form id="auth-form" class="space-y-4">
                 <div class="relative">
                     <label id="input-label" class="block text-[10px] font-bold text-blue-600 mb-1 uppercase tracking-widest">
@@ -27,8 +51,6 @@
                         <select id="country-code" class="hidden px-2 py-3 bg-slate-50 border-2 border-slate-100 rounded-lg text-sm font-medium outline-none focus:border-blue-500">
                             <option value="+91">+91 (IN)</option>
                             <option value="+1">+1 (US)</option>
-                            <option value="+44">+44 (UK)</option>
-                            <option value="+971">+971 (UAE)</option>
                         </select>
 
                         <input type="text" id="identifier" placeholder="name@mail.com or 10-digit mobile" required 
@@ -41,7 +63,7 @@
                         class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
                     
                     <div id="confirm-password-group">
-                        <input type="password" id="confirm-password" placeholder="Confirm Password" required 
+                        <input type="password" id="confirm-password" placeholder="Confirm Password" 
                             class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
                     </div>
                 </div>
@@ -56,22 +78,116 @@
                 </button>
             </form>
 
-            <div class="relative my-8">
-                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-                <div class="relative flex justify-center text-[10px] uppercase tracking-tighter"><span class="bg-white px-2 text-slate-400">Social Login</span></div>
-            </div>
-
-            <div class="flex justify-center">
-                <div id="g_id_onload" data-client_id="YOUR_ID.apps.googleusercontent.com" data-callback="handleCredentialResponse"></div>
-                <div class="g_id_signin" data-type="icon" data-shape="circle" data-theme="outline"></div>
-            </div>
-
             <p class="text-center text-sm text-slate-500 mt-8">
                 <span id="toggle-text">Already a member?</span> 
-                <button onclick="toggleAuth()" id="toggle-link" class="text-blue-600 font-bold hover:underline">Log In</button>
+                <button type="button" onclick="toggleAuth()" id="toggle-link" class="text-blue-600 font-bold hover:underline">Log In</button>
             </p>
         </div>
 
         <div id="success-container" class="hidden text-center py-10">
             <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800">Verified!</h2>
+            <p id="success-msg" class="text-slate-500 mt-2 mb-8"></p>
+            <button onclick="window.location.reload()" class="text-blue-600 font-semibold underline">Back to Login</button>
+        </div>
+    </div>
+
+    <script>
+        const identifierInput = document.getElementById('identifier');
+        const countryCode = document.getElementById('country-code');
+        const inputLabel = document.getElementById('input-label');
+        const errorBox = document.getElementById('error-box');
+        const errorText = document.getElementById('error-text');
+        const confirmPassGroup = document.getElementById('confirm-password-group');
+        const confirmPassInput = document.getElementById('confirm-password');
+        let isSignUp = true;
+
+        // Detection for Email vs Mobile
+        identifierInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (/^\d+$/.test(val)) {
+                countryCode.classList.remove('hidden');
+                inputLabel.innerText = "Mobile Number (Digits Only)";
+            } else {
+                countryCode.classList.add('hidden');
+                inputLabel.innerText = "Email Address (Must have @)";
+            }
+        });
+
+        // FIXED TOGGLE FUNCTION
+        function toggleAuth() {
+            isSignUp = !isSignUp;
+            const title = document.getElementById('form-title');
+            const submitBtn = document.getElementById('submit-btn');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleLink = document.getElementById('toggle-link');
+
+            errorBox.classList.add('hidden');
+
+            if (isSignUp) {
+                title.innerText = "Create Account";
+                submitBtn.innerText = "Create Account";
+                confirmPassGroup.classList.remove('hidden');
+                confirmPassInput.setAttribute('required', 'required');
+                toggleText.innerText = "Already a member?";
+                toggleLink.innerText = "Log In";
+            } else {
+                title.innerText = "Welcome Back";
+                submitBtn.innerText = "Sign In";
+                confirmPassGroup.classList.add('hidden');
+                confirmPassInput.removeAttribute('required');
+                toggleText.innerText = "New to Sudhakaran Finance?";
+                toggleLink.innerText = "Create Account";
+            }
+        }
+
+        // Form Submission Logic
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const val = identifierInput.value;
+            const pass = document.getElementById('password').value;
+            const confirmPass = confirmPassInput.value;
+            
+            errorBox.classList.add('hidden');
+
+            // Email check
+            if (!/^\d+$/.test(val)) {
+                if (!val.includes('@') || !val.includes('.')) {
+                    showError("Invalid email format (needs @ and .)");
+                    return;
+                }
+            } 
+            // Mobile check
+            else if (val.length !== 10) {
+                showError("Mobile number must be 10 digits.");
+                return;
+            }
+
+            // Confirm Password check
+            if (isSignUp && pass !== confirmPass) {
+                showError("Passwords do not match!");
+                return;
+            }
+
+            showSuccess(val);
+        });
+
+        function showError(msg) {
+            errorBox.classList.remove('hidden');
+            errorText.innerText = msg;
+        }
+
+        function showSuccess(id) {
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('success-container').classList.remove('hidden');
+            document.getElementById('success-msg').innerHTML = `Success for: <b>${id}</b>`;
+        }
+
+        function handleCredentialResponse(response) {
+            showSuccess("Google Verified User");
+        }
+    </script>
+</body>
+</html>
