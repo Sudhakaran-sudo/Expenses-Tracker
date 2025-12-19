@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Join | Sudhakaran Finance</title>
+    <title>Secure Join | Sudhakaran Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         #country-code-container {
             transition: all 0.3s ease-in-out;
-            max-width: 0;
-            opacity: 0;
-            overflow: hidden;
+            max-width: 0; opacity: 0; overflow: hidden;
         }
         #country-code-container.show {
-            max-width: 120px;
-            opacity: 1;
-            margin-right: 8px;
+            max-width: 120px; opacity: 1; margin-right: 8px;
         }
     </style>
 </head>
@@ -27,20 +23,12 @@
         <div id="auth-container">
             <div class="text-center mb-6">
                 <h1 id="form-title" class="text-2xl font-bold text-slate-800">Create Account</h1>
-                <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Smart wealth management starts here</p>
+                <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Join the future of wealth management</p>
             </div>
 
             <div class="flex flex-col items-center mb-6">
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-                     data-callback="handleCredentialResponse">
-                </div>
+                <div id="g_id_onload" data-client_id="YOUR_GOOGLE_ID" data-callback="handleCredentialResponse"></div>
                 <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-width="320"></div>
-            </div>
-
-            <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-                <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-white px-2 text-slate-400 font-bold">Or use credentials</span></div>
             </div>
 
             <form id="auth-form" class="space-y-4">
@@ -63,16 +51,13 @@
                             <button type="button" onclick="showRecovery()" class="text-xs text-blue-600 hover:underline font-medium">Forgot password?</button>
                         </div>
                     </div>
-
                     <div id="confirm-password-group">
                         <input type="password" id="confirm-password" placeholder="Confirm Password" 
                             class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
                     </div>
                 </div>
 
-                <div id="error-box" class="hidden bg-red-50 border-l-4 border-red-500 p-3">
-                    <p id="error-text" class="text-red-700 text-xs font-medium"></p>
-                </div>
+                <div id="error-box" class="hidden bg-red-50 border-l-4 border-red-500 p-3 text-red-700 text-xs font-medium"></div>
                 
                 <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg transition-all active:scale-[0.98]">
                     Create Account
@@ -87,8 +72,105 @@
 
         <div id="recovery-container" class="hidden text-center py-4">
             <h2 class="text-xl font-bold text-slate-800">Reset Password</h2>
-            <p class="text-slate-400 text-sm mt-2 mb-6">Enter your email or mobile to receive a reset link.</p>
-            <input type="text" id="recovery-id" placeholder="Registered Email or Mobile" class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 mb-4 outline-none focus:border-blue-500">
+            <p class="text-slate-400 text-sm mt-2 mb-6">Enter details to receive a reset link.</p>
+            <input type="text" id="recovery-id" placeholder="Email or Mobile" class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 mb-4 outline-none focus:border-blue-500">
             <button onclick="handleRecovery()" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold mb-4">Send Reset Link</button>
             <button onclick="backToAuth()" class="text-sm text-blue-600 hover:underline">Back to Login</button>
         </div>
+
+        <div id="success-container" class="hidden text-center py-10">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 id="success-title" class="text-2xl font-bold text-slate-800">Success!</h2>
+            <p id="success-msg" class="text-slate-500 mt-2 mb-8"></p>
+            <button onclick="window.location.reload()" class="bg-slate-100 px-6 py-2 rounded-lg text-slate-600 font-semibold">Home</button>
+        </div>
+    </div>
+
+    <script>
+        const countries = [
+            { name: "India", code: "+91", flag: "🇮🇳", length: 10 },
+            { name: "USA", code: "+1", flag: "🇺🇸", length: 10 },
+            { name: "UK", code: "+44", flag: "🇬🇧", length: 11 }
+        ];
+
+        let isSignUp = true;
+        const countrySelect = document.getElementById('country-code');
+        const countryCodeContainer = document.getElementById('country-code-container');
+        const confirmPassGroup = document.getElementById('confirm-password-group');
+        const forgotPassWrapper = document.getElementById('forgot-password-wrapper');
+        const authContainer = document.getElementById('auth-container');
+        const recoveryContainer = document.getElementById('recovery-container');
+        const successContainer = document.getElementById('success-container');
+
+        // Populate countries
+        countries.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.code; opt.textContent = `${c.flag} ${c.code}`; opt.dataset.len = c.length;
+            countrySelect.appendChild(opt);
+        });
+
+        // The Fixed Toggle Function
+        function toggleAuth() {
+            isSignUp = !isSignUp;
+            
+            // Ensure recovery is hidden when toggling
+            recoveryContainer.classList.add('hidden');
+            authContainer.classList.remove('hidden');
+            successContainer.classList.add('hidden');
+
+            document.getElementById('form-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
+            document.getElementById('submit-btn').innerText = isSignUp ? "Create Account" : "Sign In";
+            document.getElementById('toggle-text').innerText = isSignUp ? "Already a member?" : "New to Sudhakaran Finance?";
+            document.getElementById('toggle-link').innerText = isSignUp ? "Log In" : "Create Account";
+
+            if (isSignUp) {
+                confirmPassGroup.classList.remove('hidden');
+                forgotPassWrapper.classList.add('hidden');
+                document.getElementById('confirm-password').setAttribute('required', 'true');
+            } else {
+                confirmPassGroup.classList.add('hidden');
+                forgotPassWrapper.classList.remove('hidden');
+                document.getElementById('confirm-password').removeAttribute('required');
+            }
+        }
+
+        function showRecovery() {
+            authContainer.classList.add('hidden');
+            recoveryContainer.classList.remove('hidden');
+        }
+
+        function backToAuth() {
+            recoveryContainer.classList.add('hidden');
+            authContainer.classList.remove('hidden');
+            // Force it to stay in Log In mode when coming back from recovery
+            if (isSignUp) toggleAuth(); 
+        }
+
+        function handleRecovery() {
+            recoveryContainer.classList.add('hidden');
+            successContainer.classList.remove('hidden');
+            document.getElementById('success-title').innerText = "Email Sent!";
+            document.getElementById('success-msg').innerText = "Check your registered contact for the reset link.";
+        }
+
+        document.getElementById('identifier').addEventListener('input', (e) => {
+            if (/^\d/.test(e.target.value)) countryCodeContainer.classList.add('show');
+            else countryCodeContainer.classList.remove('show');
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            authContainer.classList.add('hidden');
+            successContainer.classList.remove('hidden');
+            document.getElementById('success-msg').innerText = `You have successfully ${isSignUp ? 'registered' : 'logged in'}.`;
+        });
+
+        function handleCredentialResponse(response) {
+            authContainer.classList.add('hidden');
+            successContainer.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
