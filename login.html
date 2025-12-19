@@ -3,37 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Sudhakaran Finance</title>
+    <title>Login | SK Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
         <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-slate-800">Welcome Back</h1>
+            <h1 class="text-2xl font-bold text-slate-800">Welcome Back to SK Finance</h1>
             <p class="text-slate-400 text-sm mt-1">Please enter your credentials</p>
         </div>
 
-        <form class="space-y-4">
+        <form id="loginForm" class="space-y-4">
             <div>
-                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Username / Email / Mobile</label>
-                <input type="text" placeholder="Enter your identifier" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
+                <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Email or Mobile</label>
+                <input type="text" id="id-field" placeholder="Enter identifier" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
             </div>
 
             <div>
                 <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-widest">Password</label>
-                <input type="password" placeholder="••••••••" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
-                <div class="text-right mt-1">
-                    <a href="#" class="text-xs text-blue-600 hover:underline">Forgot password?</a>
-                </div>
+                <input type="password" required class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
             </div>
 
             <button type="submit" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold hover:bg-slate-900 transition-all">Sign In</button>
         </form>
 
         <p class="text-center text-sm text-slate-500 mt-8">
-            New to the platform? 
-            <a href="index.html" class="text-blue-600 font-bold hover:underline">Create Account</a>
+            New to the platform? <a href="index.html" class="text-blue-600 font-bold hover:underline">Create Account</a>
         </p>
     </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent standard form reload
+            // Redirect to the sample dashboard page
+            window.location.href = 'dashboard.html';
+        });
+    </script>
 </body>
 </html>
