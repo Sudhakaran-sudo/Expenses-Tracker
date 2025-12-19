@@ -6,6 +6,19 @@
     <title>Secure Join | Sudhakaran Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        #country-code-container {
+            transition: all 0.3s ease-in-out;
+            max-width: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        #country-code-container.show {
+            max-width: 120px;
+            opacity: 1;
+            margin-right: 8px;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
 
@@ -14,31 +27,7 @@
         <div id="auth-container">
             <div class="text-center mb-6">
                 <h1 id="form-title" class="text-2xl font-bold text-slate-800 tracking-tight">Create Account</h1>
-                <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Join the future of wealth management</p>
-            </div>
-
-            <div class="flex justify-center mb-6">
-                <div id="g_id_onload"
-                     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-                     data-context="signin"
-                     data-ux_mode="popup"
-                     data-callback="handleCredentialResponse"
-                     data-auto_prompt="false">
-                </div>
-
-                <div class="g_id_signin"
-                     data-type="standard"
-                     data-shape="pill"
-                     data-theme="outline"
-                     data-text="signin_with"
-                     data-size="large"
-                     data-logo_alignment="left">
-                </div>
-            </div>
-
-            <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
-                <div class="relative flex justify-center text-[10px] uppercase tracking-tighter"><span class="bg-white px-2 text-slate-400">Or use email/mobile</span></div>
+                <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Smart wealth management starts here</p>
             </div>
 
             <form id="auth-form" class="space-y-4">
@@ -47,13 +36,11 @@
                         Email or Mobile
                     </label>
                     
-                    <div class="flex gap-2">
-                        <select id="country-code" class="hidden px-2 py-3 bg-slate-50 border-2 border-slate-100 rounded-lg text-sm font-medium outline-none focus:border-blue-500">
-                            <option value="+91">+91 (IN)</option>
-                            <option value="+1">+1 (US)</option>
-                        </select>
-
-                        <input type="text" id="identifier" placeholder="name@mail.com or 10-digit mobile" required 
+                    <div class="flex items-center">
+                        <div id="country-code-container">
+                            <select id="country-code" class="px-2 py-3 bg-slate-50 border-2 border-slate-100 rounded-lg text-sm font-bold outline-none focus:border-blue-500 w-full"></select>
+                        </div>
+                        <input type="text" id="identifier" placeholder="Email or Mobile" required 
                             class="flex-1 px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none transition-all">
                     </div>
                 </div>
@@ -61,7 +48,6 @@
                 <div class="space-y-4">
                     <input type="password" id="password" placeholder="Password" required 
                         class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
-                    
                     <div id="confirm-password-group">
                         <input type="password" id="confirm-password" placeholder="Confirm Password" 
                             class="w-full px-4 py-3 rounded-lg border-2 border-slate-100 focus:border-blue-500 outline-none">
@@ -72,8 +58,7 @@
                     <p id="error-text" class="text-red-700 text-xs font-medium"></p>
                 </div>
                 
-                <button type="submit" id="submit-btn" 
-                    class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all active:scale-[0.98]">
+                <button type="submit" id="submit-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 shadow-lg transition-all active:scale-[0.98]">
                     Create Account
                 </button>
             </form>
@@ -90,84 +75,79 @@
             </div>
             <h2 class="text-2xl font-bold text-slate-800">Verified!</h2>
             <p id="success-msg" class="text-slate-500 mt-2 mb-8"></p>
-            <button onclick="window.location.reload()" class="text-blue-600 font-semibold underline">Back to Login</button>
+            <button onclick="window.location.reload()" class="bg-slate-100 px-6 py-2 rounded-lg text-slate-600 font-semibold">Sign Out</button>
         </div>
     </div>
 
     <script>
+        // 1. DATA WITH LENGTH VALIDATION
+        const countries = [
+            { name: "India", code: "+91", flag: "🇮🇳", length: 10 },
+            { name: "USA", code: "+1", flag: "🇺🇸", length: 10 },
+            { name: "UK", code: "+44", flag: "🇬🇧", length: 11 },
+            { name: "UAE", code: "+971", flag: "🇦🇪", length: 9 },
+            { name: "Germany", code: "+49", flag: "🇩🇪", length: 11 }
+        ];
+
+        const countrySelect = document.getElementById('country-code');
         const identifierInput = document.getElementById('identifier');
-        const countryCode = document.getElementById('country-code');
-        const inputLabel = document.getElementById('input-label');
+        const countryCodeContainer = document.getElementById('country-code-container');
         const errorBox = document.getElementById('error-box');
         const errorText = document.getElementById('error-text');
-        const confirmPassGroup = document.getElementById('confirm-password-group');
-        const confirmPassInput = document.getElementById('confirm-password');
         let isSignUp = true;
 
-        // Detection for Email vs Mobile
+        // Populate Select
+        countries.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.code;
+            option.textContent = `${c.flag} ${c.code}`;
+            option.dataset.len = c.length; // Store expected length in data attribute
+            countrySelect.appendChild(option);
+        });
+
+        // Dynamic Detection
         identifierInput.addEventListener('input', (e) => {
             const val = e.target.value;
-            if (/^\d+$/.test(val)) {
-                countryCode.classList.remove('hidden');
-                inputLabel.innerText = "Mobile Number (Digits Only)";
+            if (/^\d/.test(val)) {
+                countryCodeContainer.classList.add('show');
             } else {
-                countryCode.classList.add('hidden');
-                inputLabel.innerText = "Email Address (Must have @)";
+                countryCodeContainer.classList.remove('show');
             }
         });
 
-        // FIXED TOGGLE FUNCTION
         function toggleAuth() {
             isSignUp = !isSignUp;
-            const title = document.getElementById('form-title');
-            const submitBtn = document.getElementById('submit-btn');
-            const toggleText = document.getElementById('toggle-text');
-            const toggleLink = document.getElementById('toggle-link');
-
+            document.getElementById('form-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
+            document.getElementById('confirm-password-group').classList.toggle('hidden');
             errorBox.classList.add('hidden');
-
-            if (isSignUp) {
-                title.innerText = "Create Account";
-                submitBtn.innerText = "Create Account";
-                confirmPassGroup.classList.remove('hidden');
-                confirmPassInput.setAttribute('required', 'required');
-                toggleText.innerText = "Already a member?";
-                toggleLink.innerText = "Log In";
-            } else {
-                title.innerText = "Welcome Back";
-                submitBtn.innerText = "Sign In";
-                confirmPassGroup.classList.add('hidden');
-                confirmPassInput.removeAttribute('required');
-                toggleText.innerText = "New to Sudhakaran Finance?";
-                toggleLink.innerText = "Create Account";
-            }
         }
 
-        // Form Submission Logic
+        // --- SUBMISSION VALIDATION ---
         document.getElementById('auth-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const val = identifierInput.value;
             const pass = document.getElementById('password').value;
-            const confirmPass = confirmPassInput.value;
-            
+            const confirmPass = document.getElementById('confirm-password').value;
             errorBox.classList.add('hidden');
 
-            // Email check
-            if (!/^\d+$/.test(val)) {
-                if (!val.includes('@') || !val.includes('.')) {
-                    showError("Invalid email format (needs @ and .)");
+            // Check if it's Mobile
+            if (/^\d+$/.test(val)) {
+                const selectedOption = countrySelect.options[countrySelect.selectedIndex];
+                const requiredLen = parseInt(selectedOption.dataset.len);
+
+                if (val.length !== requiredLen) {
+                    showError(`For ${selectedOption.text.split(' ')[0]}, the mobile number must be exactly ${requiredLen} digits.`);
                     return;
                 }
             } 
-            // Mobile check
-            else if (val.length !== 10) {
-                showError("Mobile number must be 10 digits.");
+            // Check if it's Email
+            else if (!val.includes('@') || !val.includes('.')) {
+                showError("Please enter a valid email address.");
                 return;
             }
 
-            // Confirm Password check
             if (isSignUp && pass !== confirmPass) {
-                showError("Passwords do not match!");
+                showError("Passwords do not match.");
                 return;
             }
 
@@ -182,11 +162,7 @@
         function showSuccess(id) {
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('success-container').classList.remove('hidden');
-            document.getElementById('success-msg').innerHTML = `Success for: <b>${id}</b>`;
-        }
-
-        function handleCredentialResponse(response) {
-            showSuccess("Google Verified User");
+            document.getElementById('success-msg').innerHTML = `Verified as <b>${id}</b>`;
         }
     </script>
 </body>
