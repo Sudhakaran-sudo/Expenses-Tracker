@@ -3,66 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Sudhakaran Finance</title>
+    <title>Join | Sudhakaran Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
 
     <div class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-                <span class="text-white text-2xl font-bold">N</span>
-            </div>
-            <h1 class="text-2xl font-bold text-slate-800">Sudhakaran Finance</h1>
-            <p class="text-slate-500 mt-2">Secure access to your wealth tracking</p>
+        <div class="text-center mb-8">
+            <h1 id="form-title" class="text-2xl font-bold text-slate-800">Create Account</h1>
+            <p id="form-subtitle" class="text-slate-500 mt-2">Start your financial journey today</p>
         </div>
 
-        <div class="flex flex-col items-center space-y-4">
+        <div class="flex flex-col items-center">
             <div id="g_id_onload"
                  data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
-                 data-context="signin"
-                 data-ux_mode="popup"
-                 data-callback="handleCredentialResponse"
-                 data-auto_prompt="false">
+                 data-callback="handleCredentialResponse">
             </div>
-
-            <div class="g_id_signin"
-                 data-type="standard"
-                 data-shape="pill"
-                 data-theme="outline"
-                 data-text="signin_with"
-                 data-size="large"
-                 data-logo_alignment="left"
-                 data-width="320">
-            </div>
+            <div class="g_id_signin" data-type="standard" data-shape="pill" data-text="signup_with" data-width="320"></div>
         </div>
 
         <div class="relative my-8">
             <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-200"></span></div>
-            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Or continue with</span></div>
+            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Or use email</span></div>
         </div>
 
-        <form class="space-y-4">
-            <input type="email" placeholder="Email address" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
-            <button type="button" class="w-full py-3 text-slate-400 font-medium hover:text-slate-600 transition">Forgot password?</button>
+        <form id="auth-form" class="space-y-4">
+            <input type="email" id="email" placeholder="Email address" required 
+                class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <input type="password" id="password" placeholder="Create Password" required 
+                class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+            
+            <button type="submit" id="submit-btn" 
+                class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
+                Create Free Account
+            </button>
         </form>
 
-        <p class="text-center text-xs text-slate-400 mt-8">
-            By signing in, you agree to our Terms of Service and Privacy Policy.
+        <p class="text-center text-sm text-slate-600 mt-8">
+            <span id="toggle-text">Already have an account?</span> 
+            <button onclick="toggleAuth()" id="toggle-link" class="text-blue-600 font-bold hover:underline">Log In</button>
         </p>
     </div>
 
     <script>
-        // This function runs after a user successfully logs in with Google
+        let isSignUp = true;
+
+        function toggleAuth() {
+            isSignUp = !isSignUp;
+            const title = document.getElementById('form-title');
+            const subtitle = document.getElementById('form-subtitle');
+            const submitBtn = document.getElementById('submit-btn');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleLink = document.getElementById('toggle-link');
+
+            if (isSignUp) {
+                title.innerText = "Create Account";
+                subtitle.innerText = "Start your financial journey today";
+                submitBtn.innerText = "Create Free Account";
+                toggleText.innerText = "Already have an account?";
+                toggleLink.innerText = "Log In";
+            } else {
+                title.innerText = "Welcome Back";
+                subtitle.innerText = "Log in to view your dashboard";
+                submitBtn.innerText = "Sign In";
+                toggleText.innerText = "New to Sudhakaran Finance?";
+                toggleLink.innerText = "Create Account";
+            }
+        }
+
+        // Handle the Form Submission
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const action = isSignUp ? "Registering" : "Logging in";
+            
+            alert(`${action} user: ${email}. \n\nNext Step: Connect this form to Supabase Auth to actually save the user!`);
+        });
+
         function handleCredentialResponse(response) {
-            console.log("Encoded JWT ID token: " + response.credential);
-            
-            // Step 1: Tell the user they are being logged in
-            alert("Success! Google has verified you. Your ID token has been logged to the console.");
-            
-            // Step 2: In a real app, you would send 'response.credential' to Supabase 
-            // to create the user session and redirect to /dashboard.
+            console.log("Google User Detected:", response.credential);
+            alert("Google Sign-In/Up Successful!");
         }
     </script>
 </body>
