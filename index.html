@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Join | Sudhakaran Finance</title>
+    <title>Join | Sudhakaran Finance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
@@ -26,16 +26,29 @@
         
         <div id="auth-container">
             <div class="text-center mb-6">
-                <h1 id="form-title" class="text-2xl font-bold text-slate-800 tracking-tight">Create Account</h1>
+                <h1 id="form-title" class="text-2xl font-bold text-slate-800">Create Account</h1>
                 <p id="form-subtitle" class="text-slate-400 text-sm mt-1">Smart wealth management starts here</p>
+            </div>
+
+            <div class="flex flex-col items-center mb-6">
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="outline" data-text="signin_with" data-size="large" data-width="320"></div>
+            </div>
+
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-slate-100"></span></div>
+                <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-white px-2 text-slate-400 font-bold">Or use email/mobile</span></div>
             </div>
 
             <form id="auth-form" class="space-y-4">
                 <div class="relative">
-                    <label id="input-label" class="block text-[10px] font-bold text-blue-600 mb-1 uppercase tracking-widest">
-                        Email or Mobile
-                    </label>
-                    
+                    <label id="input-label" class="block text-[10px] font-bold text-blue-600 mb-1 uppercase tracking-widest">Email or Mobile</label>
                     <div class="flex items-center">
                         <div id="country-code-container">
                             <select id="country-code" class="px-2 py-3 bg-slate-50 border-2 border-slate-100 rounded-lg text-sm font-bold outline-none focus:border-blue-500 w-full"></select>
@@ -70,23 +83,22 @@
         </div>
 
         <div id="success-container" class="hidden text-center py-10">
-            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
                 <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
             </div>
             <h2 class="text-2xl font-bold text-slate-800">Verified!</h2>
             <p id="success-msg" class="text-slate-500 mt-2 mb-8"></p>
-            <button onclick="window.location.reload()" class="bg-slate-100 px-6 py-2 rounded-lg text-slate-600 font-semibold">Sign Out</button>
+            <button onclick="window.location.reload()" class="bg-slate-100 px-6 py-2 rounded-lg text-slate-600 font-semibold hover:bg-slate-200">Sign Out</button>
         </div>
     </div>
 
     <script>
-        // 1. DATA WITH LENGTH VALIDATION
+        // 1. Setup Countries
         const countries = [
             { name: "India", code: "+91", flag: "🇮🇳", length: 10 },
             { name: "USA", code: "+1", flag: "🇺🇸", length: 10 },
             { name: "UK", code: "+44", flag: "🇬🇧", length: 11 },
-            { name: "UAE", code: "+971", flag: "🇦🇪", length: 9 },
-            { name: "Germany", code: "+49", flag: "🇩🇪", length: 11 }
+            { name: "UAE", code: "+971", flag: "🇦🇪", length: 9 }
         ];
 
         const countrySelect = document.getElementById('country-code');
@@ -94,59 +106,64 @@
         const countryCodeContainer = document.getElementById('country-code-container');
         const errorBox = document.getElementById('error-box');
         const errorText = document.getElementById('error-text');
+        const confirmPassGroup = document.getElementById('confirm-password-group');
+        const confirmPassInput = document.getElementById('confirm-password');
         let isSignUp = true;
 
-        // Populate Select
+        // Populate the country dropdown
         countries.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.code;
-            option.textContent = `${c.flag} ${c.code}`;
-            option.dataset.len = c.length; // Store expected length in data attribute
-            countrySelect.appendChild(option);
+            const opt = document.createElement('option');
+            opt.value = c.code;
+            opt.textContent = `${c.flag} ${c.code}`;
+            opt.dataset.len = c.length;
+            countrySelect.appendChild(opt);
         });
 
-        // Dynamic Detection
+        // Toggle Function (Hides/Shows fields)
+        function toggleAuth() {
+            isSignUp = !isSignUp;
+            document.getElementById('form-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
+            document.getElementById('submit-btn').innerText = isSignUp ? "Create Account" : "Sign In";
+            
+            if (isSignUp) {
+                confirmPassGroup.classList.remove('hidden');
+                confirmPassInput.setAttribute('required', 'true');
+            } else {
+                confirmPassGroup.classList.add('hidden');
+                confirmPassInput.removeAttribute('required');
+            }
+            errorBox.classList.add('hidden');
+        }
+
+        // Identifier detection (Email vs Mobile)
         identifierInput.addEventListener('input', (e) => {
-            const val = e.target.value;
-            if (/^\d/.test(val)) {
+            if (/^\d/.test(e.target.value)) {
                 countryCodeContainer.classList.add('show');
             } else {
                 countryCodeContainer.classList.remove('show');
             }
         });
 
-        function toggleAuth() {
-            isSignUp = !isSignUp;
-            document.getElementById('form-title').innerText = isSignUp ? "Create Account" : "Welcome Back";
-            document.getElementById('confirm-password-group').classList.toggle('hidden');
-            errorBox.classList.add('hidden');
-        }
-
-        // --- SUBMISSION VALIDATION ---
+        // Validation & Submission
         document.getElementById('auth-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const val = identifierInput.value;
             const pass = document.getElementById('password').value;
-            const confirmPass = document.getElementById('confirm-password').value;
+            
             errorBox.classList.add('hidden');
 
-            // Check if it's Mobile
             if (/^\d+$/.test(val)) {
-                const selectedOption = countrySelect.options[countrySelect.selectedIndex];
-                const requiredLen = parseInt(selectedOption.dataset.len);
-
-                if (val.length !== requiredLen) {
-                    showError(`For ${selectedOption.text.split(' ')[0]}, the mobile number must be exactly ${requiredLen} digits.`);
+                const len = parseInt(countrySelect.options[countrySelect.selectedIndex].dataset.len);
+                if (val.length !== len) {
+                    showError(`Mobile number must be ${len} digits.`);
                     return;
                 }
-            } 
-            // Check if it's Email
-            else if (!val.includes('@') || !val.includes('.')) {
-                showError("Please enter a valid email address.");
+            } else if (!val.includes('@')) {
+                showError("Valid email required.");
                 return;
             }
 
-            if (isSignUp && pass !== confirmPass) {
+            if (isSignUp && pass !== confirmPassInput.value) {
                 showError("Passwords do not match.");
                 return;
             }
@@ -163,6 +180,11 @@
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('success-container').classList.remove('hidden');
             document.getElementById('success-msg').innerHTML = `Verified as <b>${id}</b>`;
+        }
+
+        // This runs after Google Login
+        function handleCredentialResponse(response) {
+            showSuccess("Google Verified User");
         }
     </script>
 </body>
